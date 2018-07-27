@@ -1,6 +1,9 @@
 import unittest
-from car_ad_parser import CarParser
 import os.path
+import csv
+from bs4 import BeautifulSoup
+
+from car_ad_parser import CarParser
 
 
 class CarParserTestCase(unittest.TestCase):
@@ -28,11 +31,8 @@ class CarParserTestCase(unittest.TestCase):
 
     def test_translate_dict_keys(self):
         invalid_dict: dict = {'test': 'testcase'}
-        with self.assertRaises(KeyError) as key_err:
-            translate_dict_keys(invalid_dict)
-
-        the_exception = key_err.exception
-        self.assertEqual(str(the_exception), "Offer does not contain crucial information")
+        with self.assertRaises(KeyError):
+            CarParser.translate_dict_keys(invalid_dict)
 
         keys_list = ['make', 'model', 'year', 'mileage', 'petrol_type', 'type', 'no_accidents']
         valid_dict1 = {
@@ -78,8 +78,87 @@ class CarParserTestCase(unittest.TestCase):
             'bezwypadkowy': "nie"
         }
 
-        translated_dict = CarParser.translate_dict_keys(valid_dict1)
+        translated_dict = CarParser.translate_dict_keys(valid_dict2)
         self.assertEqual(translated_dict['no_accidents'], False)
+
+    def test_save_data_into_csv_file(self):
+        car_details = {
+            'make': "renault",
+            'model': "thalia",
+            'year': "2003",
+            'mileage': "123456",
+            'petrol_type': "benzyna",
+            'type': "sedan",
+            'no_accidents': 'True'
+        }
+        dict_values = list(car_details.values())
+        self.car_parser.save_data_into_csv_file(car_details)
+        self.car_parser.close_file()
+
+        with open(self.filename, "r") as csvfile:
+            read_csv = csv.reader(csvfile, delimiter=',')
+
+            counter = 0
+            for row in read_csv:
+                self.assertListEqual(dict_values, row)
+                counter += 1
+
+            self.assertEqual(counter, 1)
+
+    def test_get_offer_parameters(self):
+        with open("offer_params.html") as html_file:
+            html = html_file.read()
+
+        soup = BeautifulSoup(html, "html.parser")
+        offer_params = CarParser.get_offer_parameters(soup)
+
+        counter = 0
+        for param in offer_params:
+            self.assertTrue("<li" in str(param))
+            self.assertTrue("</li>" in str(param))
+            self.assertTrue("""<span class="offer-params__label""" in str(param))
+            self.assertTrue("""<div class="offer-params__value""" in str(param))
+            counter += 1
+
+        self.assertEqual(counter, 25)
+
+    def test_parse_offer_parameters(self):
+        with open("offer_params.html") as html_file:
+            html = html_file.read()
+        soup = BeautifulSoup(html, "html.parser")
+        offer_params = CarParser.get_offer_parameters(soup)
+        car_details = CarParser.parse_offer_parameters(offer_params)
+
+        self.assertEqual(car_details['make'], "audi")
+        self.assertEqual(car_details['model'], "s3")
+        self.assertEqual(car_details['year'], "2014")
+        self.assertEqual(car_details['mileage'], "52000")
+        self.assertEqual(car_details['petrol_type'], "benzyna")
+        self.assertEqual(car_details['type'], "kompakt")
+        self.assertTrue(car_details['no_accidents'])
+
+    def test_get_price_and_currency(self):
+        html = """
+            <div class="offer-price" data-price="130 000">
+            <span class="offer-price__number">130 000        <span class="offer-price__currency">PLN</span>
+            </span></div>
+        """
+
+        soup = BeautifulSoup(html, "html.parser")
+        price, currency = CarParser.get_price_and_currency(soup)
+
+        self.assertEqual(type(price), int)
+        self.assertEqual(price, 130000)
+        self.assertEqual(currency, "PLN")
+
+        price_tag = soup.find('span', {'class': 'offer-price__number'})
+        self.assertEqual(price, CarParser.parse_price_tag(price_tag.text), "testing parse_price_tag() method")
+
+    def tearDown(self):
+        self.car_parser.close_file()
+
+
+
 
 
 

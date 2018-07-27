@@ -3,8 +3,6 @@ from bs4 import BeautifulSoup
 from user_agent import generate_user_agent
 from car_ad_parser import CarParser
 
-from car_details import get_car_details_from_ad_page
-
 
 class CarSpider(object):
 

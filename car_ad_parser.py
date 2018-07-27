@@ -110,7 +110,7 @@ class CarParser(object):
             car_details['type'] = CarParser.plain_text(car_details.pop('typ'))
         except KeyError:
             # if ad has no such data I assume it's a fake ad
-            raise KeyError("Offer does not contain crucial information")
+            raise KeyError("Offer does not contain crucial information.")
 
         # when ad has no information about car having an accident I assume that it had one
         try:
@@ -142,4 +142,7 @@ class CarParser(object):
         return text.strip().replace(" ", "_").lower()
 
     def close_file(self):
-        self._file.close()
+        try:
+            self._file.close()
+        except IOError:
+            pass
