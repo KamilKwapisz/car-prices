@@ -19,11 +19,14 @@ class CarParser(object):
         offer_parameters = CarParser.get_offer_parameters(soup)
         price, currency = CarParser.get_price_and_currency(soup)
 
-        car_details = CarParser.parse_offer_parameters(offer_parameters)
-        car_details['price'] = price
-        car_details['currency'] = currency
+        try:
+            car_details = CarParser.parse_offer_parameters(offer_parameters)
+            car_details['price'] = price
+            car_details['currency'] = currency
 
-        self.save_data_into_csv_file(car_details)
+            self.save_data_into_csv_file(car_details)
+        except KeyError as e:
+            print(e)
 
     @staticmethod
     def get_offer_parameters(soup):
@@ -107,7 +110,7 @@ class CarParser(object):
             car_details['type'] = CarParser.plain_text(car_details.pop('typ'))
         except KeyError:
             # if ad has no such data I assume it's a fake ad
-            return dict()
+            raise KeyError("Offer does not contain crucial information")
 
         # when ad has no information about car having an accident I assume that it had one
         try:
