@@ -9,6 +9,10 @@ class CarParser(object):
         self._file = open(filename, "a", newline='')
 
     def save_car_details_from_ad_page(self, url: str):
+        """
+        Method request given url and control process of parsing car data and saving it into .csv file
+        :param url: link to a car advertisement(offer)
+        """
         r = requests.get(url)
         soup = BeautifulSoup(r.text, "html.parser")
 
@@ -23,12 +27,22 @@ class CarParser(object):
 
     @staticmethod
     def get_offer_parameters(soup):
+        """
+        Method parse HTML code in order to get all offer parameters.
+        :param soup: BeautifulSoup object created with html from requested offer page
+        :return: BeautifulSoup collection of offer parameters
+        """
         div_with_offer_param = soup.find('div', class_="offer-params")
         offer_params = div_with_offer_param.find_all('li', {'class': 'offer-params__item'})
         return offer_params
 
     @staticmethod
     def get_price_and_currency(soup):
+        """
+        Method parse HTML code to get car price and currency
+        :param soup: BeautifulSoup object created with html from requested offer page
+        :return: car price(int) and currency(str)
+        """
         price_tag = soup.find('span', {'class': 'offer-price__number'})
         price = CarParser.parse_price_tag(price_tag.text)
         currency = price_tag.find('span', {'class': 'offer-price__currency'}).text
@@ -37,6 +51,11 @@ class CarParser(object):
 
     @staticmethod
     def parse_price_tag(price_tag: str) -> int:
+        """
+        Method parse tag containing price and currency
+        :param price_tag: span with price text and another span with currency
+        :return: integer number representing car price
+        """
         price_tag = price_tag.replace(' ', '')
         price_list = []
         for ch in price_tag:
@@ -48,6 +67,11 @@ class CarParser(object):
 
     @staticmethod
     def parse_offer_parameters(offer_parameters) -> dict:
+        """
+        Parse offer parameters from html tags into python dict
+        :param offer_parameters: html tags containing car offer parameters
+        :return: dict with car offer parameters
+        """
         car_details = dict()
         accepted_keys = [
             'marka_pojazdu',
@@ -69,6 +93,11 @@ class CarParser(object):
 
     @staticmethod
     def translate_dict_keys(car_details: dict) -> dict:
+        """
+        Translate car_details dict keys from polish to english
+        :param car_details: dict with all car details
+        :return: car_details dict with keys in english
+        """
         try:
             car_details['make'] = CarParser.plain_text(car_details.pop('marka_pojazdu'))
             car_details['model'] = CarParser.plain_text(car_details.pop('model_pojazdu'))
@@ -93,6 +122,10 @@ class CarParser(object):
         return car_details
 
     def save_data_into_csv_file(self, car_details: dict):
+        """
+        Write car_details dict as a row to a csv file
+        :param car_details:
+        """
         try:
             fieldnames = list(car_details.keys())
 
