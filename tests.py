@@ -2,8 +2,10 @@ import unittest
 import os.path
 import csv
 from bs4 import BeautifulSoup
+import requests
 
 from car_ad_parser import CarParser
+from car_spider import CarSpider
 
 
 class CarParserTestCase(unittest.TestCase):
@@ -158,6 +160,34 @@ class CarParserTestCase(unittest.TestCase):
         self.car_parser.close_file()
 
 
+class CarSpiderTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.starting_page = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
+        self.limit = 2
+        self.spider = CarSpider(self.starting_page, self.limit)
+
+    def test_set_car_name(self):
+        self.assertEqual(self.spider._car_name, "volkswagen_golf")
+
+    def test_add_links_from_page_to_list(self):
+        r = requests.get(self.starting_page)
+        self.spider.add_links_from_page_to_list(r)
+
+        self.assertEqual(len(self.spider.car_ads_list), 32)
+        for link in self.spider.car_ads_list:
+            self.assertTrue("https://www.otomoto.pl/" in link)
+            car_name = self.spider._car_name.replace("_", "-")
+            self.assertTrue(car_name in link)
+
+    def test_get_car_ads_list(self):
+        self.spider.get_car_ads_list()
+
+        self.assertEqual(len(self.spider.car_ads_list), 64)
+        self.assertEqual(self.spider._page_number, 3)
+
+    def tearDown(self):
+        self.spider.close_csv_file_in_parser()
 
 
 

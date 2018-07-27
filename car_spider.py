@@ -75,6 +75,9 @@ class CarSpider(object):
     def car_name(self):
         del self._car_name
 
+    def close_csv_file_in_parser(self):
+        self.parser.close_file()
+
 
 url = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
 spider = CarSpider(url, 1)
