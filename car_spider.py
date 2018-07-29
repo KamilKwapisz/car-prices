@@ -79,7 +79,12 @@ class CarSpider(object):
         self.parser.close_file()
 
 
-url = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
-spider = CarSpider(url, 1)
-spider.get_car_ads_list()
-spider.crawl()
+# url = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
+url2 = 'https://www.otomoto.pl/osobowe/ford/focus/?page=1'
+url3 = 'https://www.otomoto.pl/osobowe/mazda/6/?page=1'
+url4 = 'https://www.otomoto.pl/osobowe/fiat/tipo/?page=1'
+url_list = [url2, url3, url4]
+for url in url_list:
+    spider = CarSpider(url, 5)
+    spider.get_car_ads_list()
+    spider.crawl()
