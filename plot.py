@@ -145,12 +145,40 @@ def set_year_to_options(selected_year):
     return [{'label': i, 'value': i} for i in sorted(all_options[selected_year])]
 
 
-#show details on hover
+# show details on hover
 @app.callback(
     dash.dependencies.Output('hover-data', 'children'),
     [dash.dependencies.Input('graph', 'hoverData')])
 def display_hover_data(hoverData):
-    return json.dumps(hoverData, indent=2)
+    try:
+        pd_index = hoverData['points'][0]['customdata']  # accessing customdata key which is a dataframe row index
+        car = df.loc[[pd_index]].values
+        make = car[0][0]
+        model = car[0][1].replace('_', ' ')
+        year = car[0][2]
+        mileage = car[0][3]
+        fuel = car[0][4]
+        body = car[0][5]
+        no_accidents = car[0][6]
+        price = car[0][7]
+        currency = car[0][8]
+        price_with_currency = "{:,}".format(price) + " " + currency
+
+        car_data = dict(
+            car=make + " " + model,
+            price=price_with_currency,
+            production_year=year,
+            mileage=mileage,
+            fuel_type=fuel,
+            body=body,
+            no_accidents=no_accidents
+        )
+
+        return json.dumps(car_data, indent=4)
+    except KeyError:
+        return None
+    except TypeError:
+        pass
 
 
 # update graph data
@@ -186,7 +214,7 @@ def update_figure(selected_make, selected_model, selected_from_year, selected_to
                 'line': {'width': 0.5, 'color': 'white'}
             },
             name=i,
-            customdata=
+            customdata=df_by_make.index,
         ))
 
     return {
