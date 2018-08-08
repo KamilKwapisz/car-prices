@@ -78,11 +78,20 @@ class CarSpider(object):
     def close_csv_file_in_parser(self):
         self.parser.close_file()
 
+    @staticmethod
+    def parse_url(car_type_url: str) -> str:
+        try:
+            question_mark_index = car_type_url.index('?')
+            valid_url = car_type_url[:question_mark_index+1] + "page=1"
+            return valid_url
+        except ValueError:
+            return car_type_url + "?page=1"
+
 
 # url = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
-url2 = 'https://www.otomoto.pl/osobowe/ford/focus/?page=1'
-url3 = 'https://www.otomoto.pl/osobowe/mazda/6/?page=1'
-url4 = 'https://www.otomoto.pl/osobowe/fiat/tipo/?page=1'
+url2 = 'https://www.otomoto.pl/osobowe/mazda/cx-5/?page=1'
+url3 = 'https://www.otomoto.pl/osobowe/mazda/mx-5/?page=1'
+url4 = 'https://www.otomoto.pl/osobowe/mercedes-benz/amg-gt/?page=1'
 url_list = [url2, url3, url4]
 for url in url_list:
     spider = CarSpider(url, 5)

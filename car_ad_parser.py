@@ -60,13 +60,18 @@ class CarParser(object):
         :return: integer number representing car price
         """
         price_tag = price_tag.replace(' ', '')
+        if ',' in price_tag:
+            # some ads have price with cents(eg 56 421,21), but we will omit them
+            coma_index = price_tag.index(',')
+            price_tag = price_tag[:coma_index]
+
         price_list = []
         for ch in price_tag:
             if ch.isdigit():
                 price_list.append(ch)
 
-        price = int("".join(price_list))
-        return price
+        price = "".join(price_list)
+        return int(price)
 
     @staticmethod
     def parse_offer_parameters(offer_parameters) -> dict:
