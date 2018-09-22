@@ -3,9 +3,11 @@ import os.path
 import csv
 from bs4 import BeautifulSoup
 import requests
+import sys
+sys.path.append('..')
 
-from car_ad_parser import CarParser
 from car_spider import CarSpider
+from car_ad_parser import CarParser
 
 
 class CarParserTestCase(unittest.TestCase):
@@ -165,7 +167,7 @@ class CarSpiderTestCase(unittest.TestCase):
     def setUp(self):
         self.starting_page = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
         self.limit = 2
-        self.spider = CarSpider(self.starting_page, self.limit)
+        self.spider = car_spider.CarSpider(self.starting_page, self.limit)
 
     def test_set_car_name(self):
         self.assertEqual(self.spider._car_name, "volkswagen_golf")

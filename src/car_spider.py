@@ -7,7 +7,7 @@ from car_ad_parser import CarParser
 class CarSpider(object):
 
     def __init__(self, starting_url: str, pages_limit: int):
-        self.starting_url: str = starting_url
+        self.starting_url: str = self.parse_url(starting_url)
         self._car_name = None
         self._page_number = 1
         self._pages_limit = pages_limit
@@ -87,13 +87,7 @@ class CarSpider(object):
         except ValueError:
             return car_type_url + "?page=1"
 
-
-# url = 'https://www.otomoto.pl/osobowe/volkswagen/golf/?page=1'
-url2 = 'https://www.otomoto.pl/osobowe/mazda/cx-5/?page=1'
-url3 = 'https://www.otomoto.pl/osobowe/mazda/mx-5/?page=1'
-url4 = 'https://www.otomoto.pl/osobowe/mercedes-benz/amg-gt/?page=1'
-url_list = [url2, url3, url4]
-for url in url_list:
-    spider = CarSpider(url, 5)
-    spider.get_car_ads_list()
-    spider.crawl()
+# for url in url_list:
+#     spider = CarSpider(url, 5)
+#     spider.get_car_ads_list()
+#     spider.crawl()

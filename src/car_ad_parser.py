@@ -16,16 +16,16 @@ class CarParser(object):
         r = requests.get(url)
         soup = BeautifulSoup(r.text, "html.parser")
 
-        offer_parameters = CarParser.get_offer_parameters(soup)
-        price, currency = CarParser.get_price_and_currency(soup)
-
         try:
+            offer_parameters = CarParser.get_offer_parameters(soup)
+            price, currency = CarParser.get_price_and_currency(soup)
+
             car_details = CarParser.parse_offer_parameters(offer_parameters)
             car_details['price'] = price
             car_details['currency'] = currency
 
             self.save_data_into_csv_file(car_details)
-        except KeyError as e:
+        except (KeyError, AttributeError) as e:
             print(e)
 
     @staticmethod

@@ -9,7 +9,7 @@ import json
 app = dash.Dash()
 app.title = "car prices"
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})  # setting css
-df = pd.read_csv('cars.csv', encoding='latin-1')
+df = pd.read_csv('../data/cars.csv', encoding='latin-1')
 
 dropdown_width = "15%"
 year_dropdown_width = "8%"
@@ -156,7 +156,7 @@ def display_hover_data(hoverData):
         make = car[0][0]
         model = car[0][1].replace('_', ' ')
         year = car[0][2]
-        mileage = car[0][3]
+        mileage = car[0][3] + " km"
         fuel = car[0][4]
         body = car[0][5]
         no_accidents = car[0][6]
