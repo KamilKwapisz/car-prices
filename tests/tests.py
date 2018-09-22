@@ -1,13 +1,14 @@
 import unittest
 import os.path
-import csv
-from bs4 import BeautifulSoup
-import requests
 import sys
-sys.path.append('..')
+import csv
 
-from car_spider import CarSpider
-from car_ad_parser import CarParser
+import requests
+from bs4 import BeautifulSoup
+
+sys.path.append('..')
+from src.car_spider import CarSpider
+from src.car_ad_parser import CarParser
 
 
 class CarParserTestCase(unittest.TestCase):

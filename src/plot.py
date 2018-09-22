@@ -1,22 +1,24 @@
+import json
+
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 import plotly.graph_objs as go
 from textwrap import dedent as d
-import json
+
 
 app = dash.Dash()
-app.title = "car prices"
+app.title = "Car prices"
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})  # setting css
-df = pd.read_csv('../data/cars.csv', encoding='latin-1')
 
-dropdown_width = "15%"
-year_dropdown_width = "8%"
+df = pd.read_csv('../data/cars.csv', encoding='latin-1')  # reading csv file with cars details
 
-AVAILABLE_MAKES = sorted(df['make'].unique())
-AVAILABLE_MODELS = sorted(df['model'].unique())
-AVAILABLE_YEARS = sorted(df['year'].unique())
+DROPDOWN_WIDTH = "15%"
+YEAR_DROPDOWN_WIDTH = "8%"
+AVAILABLE_MAKES = sorted(df['make'].unique())  # unique car makes
+AVAILABLE_MODELS = sorted(df['model'].unique())  # unique car models
+AVAILABLE_YEARS = sorted(df['year'].unique())  # unique car production years
 
 app.layout = html.Div([
 
@@ -27,7 +29,7 @@ app.layout = html.Div([
             placeholder="Pick a car make"
         )
     ],
-        style={'width': dropdown_width, 'display': 'inline-block'}),
+        style={'width': DROPDOWN_WIDTH, 'display': 'inline-block'}),
 
     html.Div([
         dcc.Dropdown(
@@ -36,11 +38,10 @@ app.layout = html.Div([
             placeholder="Pick a car model"
         )
     ],
-        style={'width': dropdown_width, 'display': 'inline-block'}),
+        style={'width': DROPDOWN_WIDTH, 'display': 'inline-block'}),
 
-    html.Div(["production year:  "], style={'width': dropdown_width, 'text-align': 'right',
+    html.Div(["production year:  "], style={'width': DROPDOWN_WIDTH, 'text-align': 'right',
                                             'display': 'inline-block', 'vertical-align': 'middle'}),
-
     html.Div([
         dcc.Dropdown(
             id='year-from-dropdown',
@@ -49,7 +50,7 @@ app.layout = html.Div([
             value=min(AVAILABLE_YEARS)
         )
     ],
-        style={'width': year_dropdown_width, 'display': 'inline-block', 'margin-left': '10px'}),
+        style={'width': YEAR_DROPDOWN_WIDTH, 'display': 'inline-block', 'margin-left': '10px'}),
 
     html.Div([
         dcc.Dropdown(
@@ -59,7 +60,7 @@ app.layout = html.Div([
             value=max(AVAILABLE_YEARS)
         )
     ],
-        style={'width': year_dropdown_width, 'display': 'inline-block'}),
+        style={'width': YEAR_DROPDOWN_WIDTH, 'display': 'inline-block'}),
 
 
     dcc.Graph(id='graph'),
@@ -86,6 +87,7 @@ app.layout = html.Div([
 def set_model_options(selected_make):
     if not selected_make:
         return [{'label': i, 'value': i} for i in AVAILABLE_MODELS]
+
     all_options = dict()
     for make in df['make'].unique():
         filtered_df = df[df['make'] == make]
@@ -198,7 +200,7 @@ def update_figure(selected_make, selected_model, selected_from_year, selected_to
         & (df.model == selected_model)
         & (df.year <= selected_to_year)
         & (df.year >= selected_from_year)
-        # & (df.make.isin(selected_make))   # this is good when we apply multi choice
+        # & (df.make.isin(selected_make))   # this is good option for multiple choices avaliable
     ]
     traces = []
     for i in filtered_df.make.unique():

@@ -1,7 +1,8 @@
-import requests  # temporarily
 from bs4 import BeautifulSoup
+import requests
 from user_agent import generate_user_agent
-from car_ad_parser import CarParser
+
+from .car_ad_parser import CarParser
 
 
 class CarSpider(object):
@@ -17,7 +18,7 @@ class CarSpider(object):
 
     def set_car_name(self):
         """
-        Method extract car make and model from starting url and save it with '_' separator eg "volkswagen_golf"
+        Method extract car's make and model from starting url and save it with '_' separator eg "volkswagen_golf"
         """
         chunks = self.starting_url.split('/')
         self.car_name = '_'.join(chunks[-3:-1])
@@ -56,11 +57,13 @@ class CarSpider(object):
         """
         Method crawl each site in car_ads_list collection
         """
+        self.get_car_ads_list()
+
         if len(self.car_ads_list) > 0:
             for link in self.car_ads_list:
                 self.parser.save_car_details_from_ad_page(link)
         else:
-            print("Firstly You need to call method 'add_links_from_page_to_list' to collect list of links to crawl.")
+            print("You need to call method 'add_links_from_page_to_list' to collect list of links to crawl.")
         self.parser.close_file()
 
     @property
@@ -89,5 +92,4 @@ class CarSpider(object):
 
 # for url in url_list:
 #     spider = CarSpider(url, 5)
-#     spider.get_car_ads_list()
 #     spider.crawl()
